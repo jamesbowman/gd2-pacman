@@ -1,1 +1,2 @@
-python mk.py
+python mk.py &&
+cp pacman_assets.h ../
