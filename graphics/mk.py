@@ -18,7 +18,15 @@ class Pacman(gd2.prep.AssetBin):
 
         def embiggen(im):
             return im.resize((80, 100), Image.NEAREST).resize((14, 18), Image.ANTIALIAS).transpose(Image.ROTATE_90)
-        self.load_handle("FONT2", [embiggen(im) for im in ims], gd2.ARGB4)
+
+        b = [embiggen(im) for im in ims]
+
+        preview = Image.new("RGBA", (16 * 14, 6 * 18))
+        for im,(x,y) in zip(b, [(x, y) for y in range(6) for x in range(16)]):
+            preview.paste(im.transpose(Image.ROTATE_270), (14 * x, 18 * y))
+        preview.convert("RGB").save("preview.png")
+            
+        self.load_handle("FONT2", b, gd2.ARGB4)
 
 if __name__ == '__main__':
     Pacman().make()

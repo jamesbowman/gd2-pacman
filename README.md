@@ -21,3 +21,8 @@ The original 8x10 tileset is:
 ![tileset](/graphics/graphics.png)
 
 This set of 96 tiles holds all the game's graphics, both foreground and sprites.
+
+The graphics are encoded at the original 8x10 resolution, and and the larger 14x18 resolution.
+The 14x18 tileset is:
+
+![preview](/graphics/preview.png)
