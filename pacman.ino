@@ -15,6 +15,8 @@ void setup()
   LOAD_ASSETS();
 }
 
+////////////////////////////////////////////////////////////////////////
+
 #define KEY_LEFT    0x01
 #define KEY_UP      0x02
 #define KEY_RIGHT   0x04
@@ -43,11 +45,7 @@ static int ax, ay, az;
 
 #define mode0_is_rammap(x)   ((x) >= 240)
 #define free_space(x,y) ( ((mode0_get_block(DIV8(x), DIV10(y)) & 0xf0) == 0x20) || \
-	mode0_is_rammap(mode0_get_block(DIV8(x), DIV10(y))))
-
-static void update_sound()
-{
-}
+  mode0_is_rammap(mode0_get_block(DIV8(x), DIV10(y))))
 
 static uint8_t key_read(uint8_t mask)
 {
@@ -91,7 +89,6 @@ static uint8_t misc_rand()
 static void sync()
 {
   delay(17);
-  update_sound();
 }
 
 #define mode0_print(x, y, txt) \
@@ -128,7 +125,6 @@ static void paint_tilemap()
   GD.Begin(BITMAPS);
   GD.get_inputs();
   GD.get_accel(ax, ay, az);
-  update_sound();
 
   uint8_t *pblk = &mode0_get_block(0, 0);
 #if ORIENTATION == LANDSCAPE
@@ -152,8 +148,17 @@ static void paint_tilemap()
 
 static void key_wait_timeout(uint8_t mask, uint8_t timeout)
 {
-  delay(16 * timeout);
+  paint_tilemap();
+  GD.swap();
+  while (timeout--) {
+    sync();
+    GD.get_inputs();
+    if (key_read(mask))
+      break;
+  }
 }
+
+////////////////////////////////////////////////////////////////////////
 
 /*
  *  Albert Seward Copyright (C) 2005
@@ -171,12 +176,12 @@ void scene_intro(void)
   uint8_t  i, mode, tmp;
   int pos, pacman;
 
-  pos = 60;
-  pacman = 70;
-
-  mode = 1;
-
   for (;;) {
+    pos = 60;
+    pacman = 70;
+
+    mode = 1;
+
     mode0_cls();
     mode0_print(5,1, "\033\021\021\021\021\021\021\021\032");
     mode0_print(5,2, "\020" PACMAN_LOGO "\020");
@@ -187,7 +192,11 @@ void scene_intro(void)
     mode0_print(3,23, "ALBERT SEWARD");
 
     for (;;) {
+
       paint_tilemap();
+
+      if(key_read(KEY_COIN))
+        return;
 
       for(i = 1; i < SPRITE_COUNT; i++) {
         tmp = pos - i * 10;
@@ -229,7 +238,7 @@ void scene_intro(void)
         key_wait_timeout(KEY_COIN, 60);
         mode0_print(5,9, "\050  INKEY");
         key_wait_timeout(KEY_COIN, 200);
-        // memset(&mode0_get_block(5,6), ' ', 20*4);
+        memset(&mode0_get_block(5,6), ' ', MODE0_COLUMNS*4);
         break;
       }
       GD.swap();
@@ -298,7 +307,7 @@ int game_main(void)
 
   // Main game loop
   for(;;) {
-    // scene_intro();
+    scene_intro();
     credits = 1;
     score = 0;
     lives = 3;
@@ -715,6 +724,5 @@ static inline uint8_t pacman_play_level(uint8_t level, uint16_t *score)
 
 void loop()
 {
-  // scene_intro();
   game_main();
 }
