@@ -18,6 +18,6 @@ a good fit for Gameduino 2's screen in sideways ("portrait") orientation.
 
 The original 8x10 tileset is:
 
-!(graphics/graphics.png)
+![tileset](/graphics/graphics.png)
 
 This set of 96 tiles holds all the game's graphics, both foreground and sprites.
