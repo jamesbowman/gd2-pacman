@@ -14,8 +14,11 @@ class Pacman(gd2.prep.AssetBin):
                 tile = im.crop((1 + 9 * x, 1 + 11 * y, 9 + 9 * x, 11 + 11 * y))
                 ims[16 * y + x] = tile
         widths = [8 for i in range(128)]
-
         self.load_font("FONT", ims, widths, gd2.ARGB2)
+
+        def embiggen(im):
+            return im.resize((80, 100), Image.NEAREST).resize((14, 18), Image.ANTIALIAS).transpose(Image.ROTATE_90)
+        self.load_handle("FONT2", [embiggen(im) for im in ims], gd2.ARGB4)
 
 if __name__ == '__main__':
     Pacman().make()
